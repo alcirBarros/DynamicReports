@@ -1,3 +1,6 @@
+package org.objectFake;
+
+import org.interfaces.Entidade;
 import java.util.HashMap;
 import java.util.Map;
 

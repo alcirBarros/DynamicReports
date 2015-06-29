@@ -1,4 +1,7 @@
+package org.interfaces;
 
+
+import org.objectFake.OperadorLogado;
 import java.util.Map;
 
 public interface IRelatorio {

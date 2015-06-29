@@ -1,7 +1,8 @@
+package receboEntregaMandadoSeguraca;
+
 import java.io.FileOutputStream;
 import java.util.HashMap;
 import java.util.Map;
-import net.sf.dynamicreports.jasper.builder.JasperReportBuilder;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -9,7 +10,7 @@ public class RelatorioTest {
     
     private RelatorioDynamic relatorio = new RelatorioDynamic();
 
-    private static final String[] ESTABELECIMENTO_ID = {"782"};
+    private static final String[] ESTABELECIMENTO_ID = {"1"};
 
     @Before
     public void setUp() {

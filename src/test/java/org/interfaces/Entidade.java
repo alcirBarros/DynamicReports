@@ -1,3 +1,5 @@
+package org.interfaces;
+
 import java.io.Serializable;
 
 public interface Entidade {

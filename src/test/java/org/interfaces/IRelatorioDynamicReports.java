@@ -1,4 +1,8 @@
+package org.interfaces;
 
+
+import org.objectFake.OperadorLogado;
+import org.objectFake.EntityManager;
 import java.util.Map;
 import net.sf.dynamicreports.jasper.builder.JasperReportBuilder;
 import net.sf.jasperreports.engine.JRDataSource;
