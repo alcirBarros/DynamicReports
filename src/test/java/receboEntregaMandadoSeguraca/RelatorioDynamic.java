@@ -13,10 +13,12 @@ import net.sf.dynamicreports.report.builder.DynamicReports;
 import static net.sf.dynamicreports.report.builder.DynamicReports.cmp;
 import static net.sf.dynamicreports.report.builder.DynamicReports.col;
 import static net.sf.dynamicreports.report.builder.DynamicReports.margin;
+import static net.sf.dynamicreports.report.builder.DynamicReports.stl;
 import static net.sf.dynamicreports.report.builder.DynamicReports.type;
 import static org.style.DynamicReportStyles.*;
 import net.sf.dynamicreports.report.builder.column.TextColumnBuilder;
 import net.sf.dynamicreports.report.builder.component.VerticalListBuilder;
+import net.sf.dynamicreports.report.builder.component.HorizontalListBuilder;
 import net.sf.dynamicreports.report.constant.HorizontalAlignment;
 import net.sf.dynamicreports.report.constant.PageOrientation;
 import net.sf.dynamicreports.report.constant.PageType;
@@ -52,8 +54,6 @@ public class RelatorioDynamic implements IRelatorioDynamicReports {
                 cmp.text("Recebi do Departamento Municipal de Saúde de São João da Boa Vista/SP o medicamento abaixo descrito para uso da paciente ALZIRA MAROCO DANTAS").setStyle(fonte10).setHorizontalAlignment(HorizontalAlignment.LEFT).setWidth(100),
                 cmp.text(" ").setStyle(fonte10).setHorizontalAlignment(HorizontalAlignment.LEFT).setWidth(100)
         );
-        
-
 
         report.title(new GeradorCabecalho(municipio, "RECIBO").get()).addTitle(verticalList);
 
@@ -63,20 +63,33 @@ public class RelatorioDynamic implements IRelatorioDynamicReports {
         TextColumnBuilder<String> columnProduto = col.column("Produto", "produto", type.stringType()).setWidth(40).setHorizontalAlignment(HorizontalAlignment.LEFT);
         TextColumnBuilder<String> columnValorUnit = col.column("Valor Unit.", "valorUnitario", type.stringType()).setWidth(15).setHorizontalAlignment(HorizontalAlignment.LEFT);
         TextColumnBuilder<String> columnQuantidade = col.column("Quant.", "quantidade", type.stringType()).setWidth(15).setHorizontalAlignment(HorizontalAlignment.LEFT);
-         TextColumnBuilder<String> columnValorTotal = col.column("Valor Total", "valorTotal", type.stringType()).setWidth(15).setHorizontalAlignment(HorizontalAlignment.LEFT);
+        TextColumnBuilder<String> columnValorTotal = col.column("Valor Total", "valorTotal", type.stringType()).setWidth(15).setHorizontalAlignment(HorizontalAlignment.LEFT);
 
-        
-        
         VerticalListBuilder summary = cmp.verticalList(
+                cmp.verticalGap(15),
+                cmp.text("Observação:"),
+                cmp.horizontalList(
+                        cmp.text("“Declaro para os devidos fins ter recebido medicamentos em quantidade suficiente para três meses de tratamento.”").setHorizontalAlignment(HorizontalAlignment.LEFT)
+                ).setStyle( stl.style().setBorder(stl.penDashed())),
+                cmp.text(" "),
+                cmp.text("São João da Boa Vista, DD de MM de AAAAAA.").setHorizontalAlignment(HorizontalAlignment.LEFT),
+                cmp.text(" "),
+                cmp.verticalList(cmp.horizontalList(
+                                cmp.verticalList(
+                                        cmp.text("___________________________").setHorizontalAlignment(HorizontalAlignment.CENTER),
+                                        cmp.text("Primero Nome").setHorizontalAlignment(HorizontalAlignment.CENTER),
+                                        cmp.text("RG: 19.547.700-5").setHorizontalAlignment(HorizontalAlignment.CENTER)
+                                ),
+                                cmp.verticalList(
+                                        cmp.text("___________________________").setHorizontalAlignment(HorizontalAlignment.CENTER),
+                                        cmp.text("Segundo Nome").setHorizontalAlignment(HorizontalAlignment.CENTER),
+                                        cmp.text("CBO: 19.547.700-5").setHorizontalAlignment(HorizontalAlignment.CENTER),
+                                        cmp.text("CR: 19.547.700-5").setHorizontalAlignment(HorizontalAlignment.CENTER)
+                                )
+                        )));
 
-                cmp.text(" ").setStyle(fonte10).setHorizontalAlignment(HorizontalAlignment.LEFT).setWidth(100),
-                cmp.text("___________________________                                                                                ___________________________").setStyle(fonte10).setHorizontalAlignment(HorizontalAlignment.LEFT).setWidth(100),
-                cmp.text(" ").setStyle(fonte10).setHorizontalAlignment(HorizontalAlignment.LEFT).setWidth(100)
-        );
-        
-        
         report.summary(summary).addSummary(new GeradorRodape(operador, estabelecimento).get());
-        
+
         return report
                 .columns(columnCodigo, columnNumeroLote, columnDataValidade, columnProduto, columnValorUnit, columnQuantidade, columnValorTotal)
                 .setPageFormat(PageType.A4, PageOrientation.PORTRAIT)
