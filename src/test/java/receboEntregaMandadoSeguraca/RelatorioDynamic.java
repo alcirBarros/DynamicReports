@@ -29,6 +29,7 @@ import org.objectFake.GeradorRelatorioPDF;
 import org.objectFake.GeradorRodape;
 import org.objectFake.Municipio;
 import org.objectFake.Operador;
+import org.templat.Templates;
 import org.util.DateUtils;
 
 public class RelatorioDynamic implements IRelatorioDynamicReports {
@@ -55,7 +56,7 @@ public class RelatorioDynamic implements IRelatorioDynamicReports {
                 cmp.text(" ").setStyle(fonte10).setHorizontalAlignment(HorizontalAlignment.LEFT).setWidth(100)
         );
 
-        report.title(new GeradorCabecalho(municipio, "RECIBO").get()).addTitle(verticalList);
+        report.pageHeader(verticalList);
 
         TextColumnBuilder< Integer> columnCodigo = col.column("Código", "codigo", type.integerType()).setWidth(10).setHorizontalAlignment(HorizontalAlignment.RIGHT);
         TextColumnBuilder<String> columnNumeroLote = col.column("Lote", "numeroLote", type.stringType()).setWidth(20).setHorizontalAlignment(HorizontalAlignment.LEFT);
@@ -88,9 +89,12 @@ public class RelatorioDynamic implements IRelatorioDynamicReports {
                                 )
                         )));
 
-        report.summary(summary).addSummary(new GeradorRodape(operador, estabelecimento).get());
-
+        //report.summary(summary).addSummary(new GeradorRodape(operador, estabelecimento).get());
         return report
+                .setTemplate(Templates.reportTemplate)
+                .title(Templates.createTitleComponent("Group"))
+                .pageFooter(Templates.footerComponent)
+                .summary(Templates.footerComponent)
                 .columns(columnCodigo, columnNumeroLote, columnDataValidade, columnProduto, columnValorUnit, columnQuantidade, columnValorTotal)
                 .setPageFormat(PageType.A4, PageOrientation.PORTRAIT)
                 .setPageMargin(margin(35))
