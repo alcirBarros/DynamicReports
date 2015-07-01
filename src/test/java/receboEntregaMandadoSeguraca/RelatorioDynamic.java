@@ -18,7 +18,6 @@ import static net.sf.dynamicreports.report.builder.DynamicReports.type;
 import static org.style.DynamicReportStyles.*;
 import net.sf.dynamicreports.report.builder.column.TextColumnBuilder;
 import net.sf.dynamicreports.report.builder.component.VerticalListBuilder;
-import net.sf.dynamicreports.report.builder.component.HorizontalListBuilder;
 import net.sf.dynamicreports.report.constant.HorizontalAlignment;
 import net.sf.dynamicreports.report.constant.PageOrientation;
 import net.sf.dynamicreports.report.constant.PageType;
@@ -26,6 +25,7 @@ import net.sf.dynamicreports.report.datasource.DRDataSource;
 import net.sf.jasperreports.engine.JRDataSource;
 import org.objectFake.Estabelecimento;
 import org.objectFake.GeradorCabecalho;
+import org.objectFake.GeradorRelatorioPDF;
 import org.objectFake.GeradorRodape;
 import org.objectFake.Municipio;
 import org.objectFake.Operador;
@@ -70,7 +70,7 @@ public class RelatorioDynamic implements IRelatorioDynamicReports {
                 cmp.text("Observação:"),
                 cmp.horizontalList(
                         cmp.text("“Declaro para os devidos fins ter recebido medicamentos em quantidade suficiente para três meses de tratamento.”").setHorizontalAlignment(HorizontalAlignment.LEFT)
-                ).setStyle( stl.style().setBorder(stl.penDashed())),
+                ).setStyle(stl.style().setBorder(stl.penDashed())),
                 cmp.text(" "),
                 cmp.text("São João da Boa Vista, DD de MM de AAAAAA.").setHorizontalAlignment(HorizontalAlignment.LEFT),
                 cmp.text(" "),
@@ -128,6 +128,7 @@ public class RelatorioDynamic implements IRelatorioDynamicReports {
 
     @Override
     public Object gerarPDF(Map<String, String[]> parametros, OperadorLogado operadorLogado, String pathRelatorios) throws Exception {
-        return null;
+        JasperReportBuilder reportBuilder = parametro(parametros, operadorLogado);
+        return new GeradorRelatorioPDF(reportBuilder, "relatorio").getByteArrayOutputStream();
     }
 }

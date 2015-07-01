@@ -25,9 +25,7 @@ public class GeradorRodape implements Gerador {
     public ComponentBuilder get() {
 
         VerticalListBuilder content = cmp.verticalList(
-                cmp.verticalList(
-                        cmp.text(" ")
-                ),
+                cmp.verticalGap(15),
                 cmp.horizontalList(
                         cmp.text("Operador: " + "Nome do Operador Logado").setStyle(fonte10).setHorizontalAlignment(HorizontalAlignment.LEFT).setWidth(250),
                         cmp.text("Unidade: " + "Unidade Selecionada").setStyle(fonte10).setWidth(250),
