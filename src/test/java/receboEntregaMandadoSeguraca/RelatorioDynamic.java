@@ -1,38 +1,44 @@
 package receboEntregaMandadoSeguraca;
 
-import java.text.ParseException;
-import java.util.Calendar;
-import org.objectFake.Source;
 import org.objectFake.OperadorLogado;
-import org.objectFake.EntityManager;
 import org.interfaces.IRelatorioDynamicReports;
-import java.util.Date;
 import java.util.Map;
-import net.sf.dynamicreports.jasper.builder.JasperReportBuilder;
 import net.sf.dynamicreports.report.builder.DynamicReports;
-import static net.sf.dynamicreports.report.builder.DynamicReports.cmp;
-import static net.sf.dynamicreports.report.builder.DynamicReports.col;
-import static net.sf.dynamicreports.report.builder.DynamicReports.margin;
-import static net.sf.dynamicreports.report.builder.DynamicReports.stl;
-import static net.sf.dynamicreports.report.builder.DynamicReports.type;
-import static org.style.DynamicReportStyles.*;
-import net.sf.dynamicreports.report.builder.column.TextColumnBuilder;
-import net.sf.dynamicreports.report.builder.component.VerticalListBuilder;
-import net.sf.dynamicreports.report.constant.HorizontalAlignment;
-import net.sf.dynamicreports.report.constant.PageOrientation;
-import net.sf.dynamicreports.report.constant.PageType;
-import net.sf.dynamicreports.report.datasource.DRDataSource;
 import net.sf.jasperreports.engine.JRDataSource;
 import org.objectFake.Estabelecimento;
-import org.objectFake.GeradorCabecalho;
 import org.objectFake.GeradorRelatorioPDF;
-import org.objectFake.GeradorRodape;
 import org.objectFake.Municipio;
 import org.objectFake.Operador;
 import org.templat.Templates;
-import org.util.DateUtils;
+
+import static net.sf.dynamicreports.report.builder.DynamicReports.*;
+
+import java.util.Date;
+
+import net.sf.dynamicreports.jasper.builder.JasperReportBuilder;
+
+import net.sf.dynamicreports.report.builder.barcode.Code128BarcodeBuilder;
+
+import net.sf.dynamicreports.report.builder.barcode.Ean128BarcodeBuilder;
+
+import net.sf.dynamicreports.report.builder.component.ComponentBuilder;
+
+import net.sf.dynamicreports.report.builder.component.TextFieldBuilder;
+
+import net.sf.dynamicreports.report.builder.component.VerticalListBuilder;
+
+import net.sf.dynamicreports.report.builder.style.StyleBuilder;
+
+import net.sf.dynamicreports.report.constant.HorizontalAlignment;
+
+import net.sf.dynamicreports.report.constant.PageType;
+import org.objectFake.Source;
+import org.templat.ShippingLabelData;
 
 public class RelatorioDynamic implements IRelatorioDynamicReports {
+
+    private ShippingLabelData data = new ShippingLabelData();
+    private StyleBuilder bold14Style;
 
     private final JasperReportBuilder report = DynamicReports.report();
     private final Municipio municipio = Municipio.criaInstancia();
@@ -40,94 +46,97 @@ public class RelatorioDynamic implements IRelatorioDynamicReports {
     private final Estabelecimento estabelecimento = Estabelecimento.criaInstancia();
 
     @Override
-    public Object setEm(EntityManager em) {
-        return null;
-    }
-
-    @Override
     public JasperReportBuilder geraRelatorioCom(Object... obj) {
 
-        VerticalListBuilder verticalList = cmp.verticalList(
-                cmp.text("Nº Movimento: ").setStyle(fonte10).setHorizontalAlignment(HorizontalAlignment.LEFT).setWidth(100),
-                cmp.text("Nº Processo: ").setStyle(fonte10).setHorizontalAlignment(HorizontalAlignment.LEFT).setWidth(100),
-                cmp.text("Nº Ordem: ").setStyle(fonte10).setHorizontalAlignment(HorizontalAlignment.LEFT).setWidth(100),
-                cmp.text(" ").setStyle(fonte10).setHorizontalAlignment(HorizontalAlignment.LEFT).setWidth(100),
-                cmp.text("Recebi do Departamento Municipal de Saúde de São João da Boa Vista/SP o medicamento abaixo descrito para uso da paciente ALZIRA MAROCO DANTAS").setStyle(fonte10).setHorizontalAlignment(HorizontalAlignment.LEFT).setWidth(100),
-                cmp.text(" ").setStyle(fonte10).setHorizontalAlignment(HorizontalAlignment.LEFT).setWidth(100)
-        );
+        ShippingLabel shippingLabel = data.getShippingLabel();
 
-        report.pageHeader(verticalList);
+        StyleBuilder textStyle = stl.style()
+                .setFontSize(12);
 
-        TextColumnBuilder< Integer> columnCodigo = col.column("Código", "codigo", type.integerType()).setWidth(10).setHorizontalAlignment(HorizontalAlignment.RIGHT);
-        TextColumnBuilder<String> columnNumeroLote = col.column("Lote", "numeroLote", type.stringType()).setWidth(20).setHorizontalAlignment(HorizontalAlignment.LEFT);
-        TextColumnBuilder<Date> columnDataValidade = col.column("Data Validade", "dataValidade", type.dateType()).setWidth(20).setHorizontalAlignment(HorizontalAlignment.CENTER);
-        TextColumnBuilder<String> columnProduto = col.column("Produto", "produto", type.stringType()).setWidth(40).setHorizontalAlignment(HorizontalAlignment.LEFT);
-        TextColumnBuilder<String> columnValorUnit = col.column("Valor Unit.", "valorUnitario", type.stringType()).setWidth(15).setHorizontalAlignment(HorizontalAlignment.LEFT);
-        TextColumnBuilder<String> columnQuantidade = col.column("Quant.", "quantidade", type.stringType()).setWidth(15).setHorizontalAlignment(HorizontalAlignment.LEFT);
-        TextColumnBuilder<String> columnValorTotal = col.column("Valor Total", "valorTotal", type.stringType()).setWidth(15).setHorizontalAlignment(HorizontalAlignment.LEFT);
+        bold14Style = stl.style(Templates.boldStyle).setFontSize(14);
 
-        VerticalListBuilder summary = cmp.verticalList(
-                cmp.verticalGap(15),
-                cmp.text("Observação:"),
-                cmp.horizontalList(
-                        cmp.text("“Declaro para os devidos fins ter recebido medicamentos em quantidade suficiente para três meses de tratamento.”").setHorizontalAlignment(HorizontalAlignment.LEFT)
-                ).setStyle(stl.style().setBorder(stl.penDashed())),
-                cmp.text(" "),
-                cmp.text("São João da Boa Vista, DD de MM de AAAAAA.").setHorizontalAlignment(HorizontalAlignment.LEFT),
-                cmp.text(" "),
-                cmp.verticalList(cmp.horizontalList(
-                                cmp.verticalList(
-                                        cmp.text("___________________________").setHorizontalAlignment(HorizontalAlignment.CENTER),
-                                        cmp.text("Primero Nome").setHorizontalAlignment(HorizontalAlignment.CENTER),
-                                        cmp.text("RG: 19.547.700-5").setHorizontalAlignment(HorizontalAlignment.CENTER)
-                                ),
-                                cmp.verticalList(
-                                        cmp.text("___________________________").setHorizontalAlignment(HorizontalAlignment.CENTER),
-                                        cmp.text("Segundo Nome").setHorizontalAlignment(HorizontalAlignment.CENTER),
-                                        cmp.text("CBO: 19.547.700-5").setHorizontalAlignment(HorizontalAlignment.CENTER),
-                                        cmp.text("CR: 19.547.700-5").setHorizontalAlignment(HorizontalAlignment.CENTER)
-                                )
-                        )));
+        StyleBuilder boldCentered30Style = stl.style(bold14Style)
+                .setFontSize(30)
+                .setHorizontalAlignment(HorizontalAlignment.CENTER);
 
-        //report.summary(summary).addSummary(new GeradorRodape(operador, estabelecimento).get());
-        return report
+        StyleBuilder boldCentered100Style = stl.style(boldCentered30Style)
+                .setFontSize(100);
+//
+        Ean128BarcodeBuilder shippingContainerCode = bcode.ean128("100264835710351")
+                .setModuleWidth(2.5)
+                .setStyle(bold14Style);
+//
+//        Code128BarcodeBuilder shipToPostalCode = bcode.code128("09820")
+//                .setModuleWidth(3d)
+//                .setStyle(bold14Style);
+
+        TextFieldBuilder<Integer> priority = cmp.text(shippingLabel.getPriority()).setStyle(boldCentered100Style);
+
+        TextFieldBuilder<String> pod = cmp.text(shippingLabel.getPod()).setStyle(boldCentered30Style);
+
+        TextFieldBuilder<Date> dateShipped = cmp.text(exp.date(shippingLabel.getDateShipped())).setDataType(type.dateType());
+
+        TextFieldBuilder<String> po = cmp.text(shippingLabel.getPo()).setStyle(boldCentered30Style);
+
+        report
                 .setTemplate(Templates.reportTemplate)
-                .title(Templates.createTitleComponent("Group"))
-                .pageFooter(Templates.footerComponent)
-                .summary(Templates.footerComponent)
-                .columns(columnCodigo, columnNumeroLote, columnDataValidade, columnProduto, columnValorUnit, columnQuantidade, columnValorTotal)
-                .setPageFormat(PageType.A4, PageOrientation.PORTRAIT)
-                .setPageMargin(margin(35))
-                .highlightDetailEvenRows();
+                .setPageFormat(PageType.A5)
+                .setTextStyle(textStyle)
+                .title(
+                        Templates.createTitleComponent("ShippingLabel"),
+                        cmp.horizontalList(
+                                createCustomerComponent("From", shippingLabel.getFrom()),
+                                createCustomerComponent("To", shippingLabel.getTo())),
+                        cmp.horizontalList(
+                                cmp.verticalList(
+                                        createCellComponent("Priority", priority),
+                                        createCellComponent("POD", pod)),
+                                cmp.verticalList(
+                                        cmp.horizontalList(
+                                                createCellComponent("Carrier", cmp.text(shippingLabel.getCarrier())),
+                                                createCellComponent("Date shipped", dateShipped)),
+                                        cmp.horizontalList(
+                                                createCellComponent("Weight", cmp.text(shippingLabel.getWeight())),
+                                                createCellComponent("Quantity", cmp.text(shippingLabel.getQuantity())))
+//                                        createCellComponent("Ship to postal code", shipToPostalCode)
+                                )),
+                        createCellComponent("PO", po),
+                        createCellComponent("Serial shipping container", shippingContainerCode));
+
+        return report;
+
+    }
+
+    private ComponentBuilder<?, ?> createCellComponent(String label, ComponentBuilder<?, ?> content) {
+        VerticalListBuilder cell = cmp.verticalList(
+                cmp.text(label).setStyle(bold14Style),
+                cmp.horizontalList(
+                        cmp.horizontalGap(20),
+                        content,
+                        cmp.horizontalGap(5)));
+
+        cell.setStyle(stl.style(stl.pen2Point()));
+        return cell;
+    }
+
+    private ComponentBuilder<?, ?> createCustomerComponent(String label, Customer customer) {
+        VerticalListBuilder content = cmp.verticalList(
+                cmp.text(customer.getName()),
+                cmp.text(customer.getAddress()),
+                cmp.text(customer.getCity()));
+        return createCellComponent(label, content);
     }
 
     @Override
     public JRDataSource createDataSource(Object obj) {
-        DRDataSource dataSource = new DRDataSource("codigo", "numeroLote", "dataValidade", "produto", "valorUnitario", "quantidade", "valorTotal");
-        dataSource.add(1, "aaaa", new Date(), "aaaaaaaaaaaa", "", "", "");
-        dataSource.add(2, "bbbb", new Date(), "bbbbbbbbbb", "", "", "");
-        return dataSource;
+        return null;
     }
 
     @Override
     public JasperReportBuilder parametro(Map<String, String[]> parametro, OperadorLogado operadorLogado) {
-        try {
-            Calendar dataInicio = DateUtils.toCalendar(DateUtils.FORMAT_DD_MM_YYYYY.parse(parametro.get("dataInicio")[0]));
-            Calendar dataFim = DateUtils.toCalendar(DateUtils.FORMAT_DD_MM_YYYYY.parse(parametro.get("dataFim")[0]));
-            String[] estabelecimentoId = (parametro.get("estabelecimentoId") != null) ? parametro.get("estabelecimentoId") : null;
-
-            Source source = new Source();
-            source.put("dataInicio", dataInicio);
-            source.put("dataFim", dataFim);
-            source.put("estabelecimentoId", estabelecimentoId);
-
-            JRDataSource createDataSource = createDataSource(source);
-            JasperReportBuilder reportBuilder = geraRelatorioCom(operadorLogado, source);
-            reportBuilder.setDataSource(createDataSource);
-            return reportBuilder;
-        } catch (ParseException ex) {
-            return null;
-        }
+        Source source = new Source();
+        JasperReportBuilder geraRelatorioCom = geraRelatorioCom(source);
+        return geraRelatorioCom;
     }
 
     @Override

@@ -9,8 +9,6 @@ import net.sf.jasperreports.engine.JRDataSource;
 
 public interface IRelatorioDynamicReports extends IRelatorio{
 
-    public Object setEm(EntityManager em);
-
     public JasperReportBuilder geraRelatorioCom(Object... obj);
 
     public JRDataSource createDataSource(Object obj);
